@@ -1,0 +1,1327 @@
+---
+title: "Homelessness in the Tri-Cities"
+author: "Upper East Tennessee Human Development Agency"
+date: '`r format(Sys.Date(), "%m/%d/%Y")`'
+output: 
+  prettydoc::html_pretty:
+    theme: yeti
+always_allow_html: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r load packages, include = FALSE}
+packages <- c("tidyverse", "tidycensus", "leaflet", "mapview", "DT", "sf",
+                 "knitr", "rmarkdown", "kableExtra", "RColorBrewer", "tigris",
+                 "directlabels", "officer", "flextable", "zoo", "scales")
+
+lapply(packages, library, character.only = TRUE)
+
+
+
+```
+
+```{r load data, include = FALSE, echo = FALSE}
+
+dp_table_variables_18 <- load_variables(2018, "acs5/profile", cache = TRUE)
+
+new_names_18 <- c("variable", "label", "concept")
+
+names(dp_table_variables_18) <- new_names_18
+
+  ####load the data#####
+    
+    ####data profiles####
+    
+    ##carter##
+    
+    Carter_dp02_2018 <- get_acs(geography = "tract", county = "Carter", state = "TN", table = "DP02", year = 2018, geometry = TRUE)
+    
+    Carter_dp03_2018 <- get_acs(geography = "tract", county = "Carter", state = "TN", table = "DP03", year = 2018, geometry = TRUE)
+    
+    Carter_dp04_2018 <- get_acs(geography = "tract", county = "Carter", state = "TN", table = "DP04", year = 2018, geometry = TRUE)
+    
+    Carter_dp05_2018 <- get_acs(geography = "tract", county = "Carter", state = "TN", table = "DP05", year = 2018, geometry = TRUE)
+    
+    ##greene##
+    
+    
+    Greene_dp02_2018 <- get_acs(geography = "tract", county = "Greene", state = "TN", table = "DP02", year = 2018, geometry = TRUE)
+    
+    Greene_dp03_2018 <- get_acs(geography = "tract", county = "Greene", state = "TN", table = "DP03", year = 2018, geometry = TRUE)
+    
+    Greene_dp04_2018 <- get_acs(geography = "tract", county = "Greene", state = "TN", table = "DP04", year = 2018, geometry = TRUE)
+    
+    Greene_dp05_2018 <- get_acs(geography = "tract", county = "Greene", state = "TN", table = "DP05", year = 2018, geometry = TRUE)
+    
+    ##hancock
+    
+    Hancock_dp02_2018 <- get_acs(geography = "tract", county = "Hancock", state = "TN", table = "DP02", year = 2018, geometry = TRUE)
+    
+    Hancock_dp03_2018 <- get_acs(geography = "tract", county = "Hancock", state = "TN", table = "DP03", year = 2018, geometry = TRUE)
+    
+    Hancock_dp04_2018 <- get_acs(geography = "tract", county = "Hancock", state = "TN", table = "DP04", year = 2018, geometry = TRUE)
+    
+    Hancock_dp05_2018 <- get_acs(geography = "tract", county = "Hancock", state = "TN", table = "DP05", year = 2018, geometry = TRUE)
+    
+    ##hawkins
+    
+    Hawkins_dp02_2018 <- get_acs(geography = "tract", county = "Hawkins", state = "TN", table = "DP02", year = 2018, geometry = TRUE)
+    
+    Hawkins_dp03_2018 <- get_acs(geography = "tract", county = "Hawkins", state = "TN", table = "DP03", year = 2018, geometry = TRUE)
+    
+    Hawkins_dp04_2018 <- get_acs(geography = "tract", county = "Hawkins", state = "TN", table = "DP04", year = 2018, geometry = TRUE)
+    
+    Hawkins_dp05_2018 <- get_acs(geography = "tract", county = "Hawkins", state = "TN", table = "DP05", year = 2018, geometry = TRUE)
+    
+    
+    ##johnson
+    
+    Johnson_dp02_2018 <- get_acs(geography = "tract", county = "Johnson", state = "TN", table = "DP02", year = 2018, geometry = TRUE)
+    
+    Johnson_dp03_2018 <- get_acs(geography = "tract", county = "Johnson", state = "TN", table = "DP03", year = 2018, geometry = TRUE)
+    
+    Johnson_dp04_2018 <- get_acs(geography = "tract", county = "Johnson", state = "TN", table = "DP04", year = 2018, geometry = TRUE)
+    
+    Johnson_dp05_2018 <- get_acs(geography = "tract", county = "Johnson", state = "TN", table = "DP05", year = 2018, geometry = TRUE)
+    
+    ##sullivan
+    
+    Sullivan_dp02_2018 <- get_acs(geography = "tract", county = "Sullivan", state = "TN", table = "DP02", year = 2018, geometry = TRUE)
+    
+    Sullivan_dp03_2018 <- get_acs(geography = "tract", county = "Sullivan", state = "TN", table = "DP03", year = 2018, geometry = TRUE)
+    
+    Sullivan_dp04_2018 <- get_acs(geography = "tract", county = "Sullivan", state = "TN", table = "DP04", year = 2018, geometry = TRUE)
+    
+    Sullivan_dp05_2018 <- get_acs(geography = "tract", county = "Sullivan", state = "TN", table = "DP05", year = 2018, geometry = TRUE)
+    
+    ##washington
+    
+    
+    Washington_dp02_2018 <- get_acs(geography = "tract", county = "Washington", state = "TN", table = "DP02", year = 2018, geometry = TRUE)
+    
+    Washington_dp03_2018 <- get_acs(geography = "tract", county = "Washington", state = "TN", table = "DP03", year = 2018, geometry = TRUE)
+    
+    Washington_dp04_2018 <- get_acs(geography = "tract", county = "Washington", state = "TN", table = "DP04", year = 2018, geometry = TRUE)
+    
+    Washington_dp05_2018 <- get_acs(geography = "tract", county = "Washington", state = "TN", table = "DP05", year = 2018, geometry = TRUE)
+    
+    ##unicoi
+    
+    Unicoi_dp02_2018 <- get_acs(geography = "tract", county = "Unicoi", state = "TN", table = "DP02", year = 2018, geometry = TRUE)
+    
+    Unicoi_dp03_2018 <- get_acs(geography = "tract", county = "Unicoi", state = "TN", table = "DP03", year = 2018, geometry = TRUE)
+    
+    Unicoi_dp04_2018 <- get_acs(geography = "tract", county = "Unicoi", state = "TN", table = "DP04", year = 2018, geometry = TRUE)
+    
+    Unicoi_dp05_2018 <- get_acs(geography = "tract", county = "Unicoi", state = "TN", table = "DP05", year = 2018, geometry = TRUE)
+    
+    
+    ####2018####
+    
+    ##carter
+    
+    Carter_dp02_18 <- inner_join(Carter_dp02_2018, dp_table_variables_18, by = "variable")
+    
+    Carter_dp03_18 <- inner_join(Carter_dp03_2018, dp_table_variables_18, by = "variable")
+    
+    Carter_dp04_18 <- inner_join(Carter_dp04_2018, dp_table_variables_18, by = "variable")
+    
+    Carter_dp05_18 <- inner_join(Carter_dp05_2018, dp_table_variables_18, by = "variable")
+    
+    ##greene
+    
+    Greene_dp02_18 <- inner_join(Greene_dp02_2018, dp_table_variables_18, by = "variable")
+    
+    Greene_dp03_18 <- inner_join(Greene_dp03_2018, dp_table_variables_18, by = "variable")
+    
+    Greene_dp04_18 <- inner_join(Greene_dp04_2018, dp_table_variables_18, by = "variable")
+    
+    Greene_dp05_18 <- inner_join(Greene_dp05_2018, dp_table_variables_18, by = "variable")
+    
+    ##hancock
+    
+    Hancock_dp02_18 <- inner_join(Hancock_dp02_2018, dp_table_variables_18, by = "variable")
+    
+    Hancock_dp03_18 <- inner_join(Hancock_dp03_2018, dp_table_variables_18, by = "variable")
+    
+    Hancock_dp04_18 <- inner_join(Hancock_dp04_2018, dp_table_variables_18, by = "variable")
+    
+    Hancock_dp05_18 <- inner_join(Hancock_dp05_2018, dp_table_variables_18, by = "variable")
+    
+    ##hawkins  
+    
+    Hawkins_dp02_18 <- inner_join(Hawkins_dp02_2018, dp_table_variables_18, by = "variable")
+    
+    Hawkins_dp03_18 <- inner_join(Hawkins_dp03_2018, dp_table_variables_18, by = "variable")
+    
+    Hawkins_dp04_18 <- inner_join(Hawkins_dp04_2018, dp_table_variables_18, by = "variable")
+    
+    Hawkins_dp05_18 <- inner_join(Hawkins_dp05_2018, dp_table_variables_18, by = "variable")
+    
+    ##johnson
+    
+    Johnson_dp02_18 <- inner_join(Johnson_dp02_2018, dp_table_variables_18, by = "variable")
+    
+    Johnson_dp03_18 <- inner_join(Johnson_dp03_2018, dp_table_variables_18, by = "variable")
+    
+    Johnson_dp04_18 <- inner_join(Johnson_dp04_2018, dp_table_variables_18, by = "variable")
+    
+    Johnson_dp05_18 <- inner_join(Johnson_dp05_2018, dp_table_variables_18, by = "variable")
+    
+    ##sullivan
+    
+    Sullivan_dp02_18 <- inner_join(Sullivan_dp02_2018, dp_table_variables_18, by = "variable")
+    
+    Sullivan_dp03_18 <- inner_join(Sullivan_dp03_2018, dp_table_variables_18, by = "variable")
+    
+    Sullivan_dp04_18 <- inner_join(Sullivan_dp04_2018, dp_table_variables_18, by = "variable")
+    
+    Sullivan_dp05_18 <- inner_join(Sullivan_dp05_2018, dp_table_variables_18, by = "variable")
+    
+    ##washington
+    
+    Washington_dp02_18 <- inner_join(Washington_dp02_2018, dp_table_variables_18, by = "variable")
+    
+    Washington_dp03_18 <- inner_join(Washington_dp03_2018, dp_table_variables_18, by = "variable")
+    
+    Washington_dp04_18 <- inner_join(Washington_dp04_2018, dp_table_variables_18, by = "variable")
+    
+    Washington_dp05_18 <- inner_join(Washington_dp05_2018, dp_table_variables_18, by = "variable")
+    
+    ##unicoi
+    
+    Unicoi_dp02_18 <- inner_join(Unicoi_dp02_2018, dp_table_variables_18, by = "variable")
+    
+    Unicoi_dp03_18 <- inner_join(Unicoi_dp03_2018, dp_table_variables_18, by = "variable")
+    
+    Unicoi_dp04_18 <- inner_join(Unicoi_dp04_2018, dp_table_variables_18, by = "variable")
+    
+    Unicoi_dp05_18 <- inner_join(Unicoi_dp05_2018, dp_table_variables_18, by = "variable")
+    
+    ####2018####
+    
+    dp02_18 <- rbind(Carter_dp02_18, Greene_dp02_18, Hancock_dp02_18, Hawkins_dp02_18, Johnson_dp02_18, Sullivan_dp02_18, Washington_dp02_18, Unicoi_dp02_18)
+    
+    dp03_18 <- rbind(Carter_dp03_18, Greene_dp03_18, Hancock_dp03_18, Hawkins_dp03_18, Johnson_dp03_18, Sullivan_dp03_18, Washington_dp03_18, Unicoi_dp03_18)
+    
+    dp04_18 <- rbind(Carter_dp04_18, Greene_dp04_18, Hancock_dp04_18, Hawkins_dp04_18, Johnson_dp04_18, Sullivan_dp04_18, Washington_dp04_18, Unicoi_dp04_18)
+    
+    dp05_18 <- rbind(Carter_dp05_18, Greene_dp05_18, Hancock_dp05_18, Hawkins_dp05_18, Johnson_dp05_18, Sullivan_dp05_18, Washington_dp05_18, Unicoi_dp05_18)
+    
+    #2018#
+    
+    dp_2018 <- rbind(dp02_18, dp03_18, dp04_18, dp05_18)
+    
+    
+    #Carter
+    
+    #2018
+    
+    Carter_County_dp02_2018 <- get_acs(geography = "county", county = "Carter", state = "TN", table = "DP02", year = 2018, geometry = TRUE)
+    
+    Carter_County_dp03_2018 <- get_acs(geography = "county", county = "Carter", state = "TN", table = "DP03", year = 2018, geometry = TRUE)
+    
+    Carter_County_dp04_2018 <- get_acs(geography = "county", county = "Carter", state = "TN", table = "DP04", year = 2018, geometry = TRUE)
+    
+    Carter_County_dp05_2018 <- get_acs(geography = "county", county = "Carter", state = "TN", table = "DP05", year = 2018, geometry = TRUE)
+    
+    #Greene
+    
+    #2018
+    
+    Greene_County_dp02_2018 <- get_acs(geography = "county", county = "Greene", state = "TN", table = "DP02", year = 2018, geometry = TRUE)
+    
+    Greene_County_dp03_2018 <- get_acs(geography = "county", county = "Greene", state = "TN", table = "DP03", year = 2018, geometry = TRUE)
+    
+    Greene_County_dp04_2018 <- get_acs(geography = "county", county = "Greene", state = "TN", table = "DP04", year = 2018, geometry = TRUE)
+    
+    Greene_County_dp05_2018 <- get_acs(geography = "county", county = "Greene", state = "TN", table = "DP05", year = 2018, geometry = TRUE)
+    
+    #Hancock
+    
+    #2018
+    
+    Hancock_County_dp02_2018 <- get_acs(geography = "county", county = "Hancock", state = "TN", table = "DP02", year = 2018, geometry = TRUE)
+    
+    Hancock_County_dp03_2018 <- get_acs(geography = "county", county = "Hancock", state = "TN", table = "DP03", year = 2018, geometry = TRUE)
+    
+    Hancock_County_dp04_2018 <- get_acs(geography = "county", county = "Hancock", state = "TN", table = "DP04", year = 2018, geometry = TRUE)
+    
+    Hancock_County_dp05_2018 <- get_acs(geography = "county", county = "Hancock", state = "TN", table = "DP05", year = 2018, geometry = TRUE)
+    
+    #Hawkins
+    
+    #2018
+    
+    Hawkins_County_dp02_2018 <- get_acs(geography = "county", county = "Hawkins", state = "TN", table = "DP02", year = 2018, geometry = TRUE)
+    
+    Hawkins_County_dp03_2018 <- get_acs(geography = "county", county = "Hawkins", state = "TN", table = "DP03", year = 2018, geometry = TRUE)
+    
+    Hawkins_County_dp04_2018 <- get_acs(geography = "county", county = "Hawkins", state = "TN", table = "DP04", year = 2018, geometry = TRUE)
+    
+    Hawkins_County_dp05_2018 <- get_acs(geography = "county", county = "Hawkins", state = "TN", table = "DP05", year = 2018, geometry = TRUE)
+    
+    #Johnson
+    
+    #2018
+    
+    Johnson_County_dp02_2018 <- get_acs(geography = "county", county = "Johnson", state = "TN", table = "DP02", year = 2018, geometry = TRUE)
+    
+    Johnson_County_dp03_2018 <- get_acs(geography = "county", county = "Johnson", state = "TN", table = "DP03", year = 2018, geometry = TRUE)
+    
+    Johnson_County_dp04_2018 <- get_acs(geography = "county", county = "Johnson", state = "TN", table = "DP04", year = 2018, geometry = TRUE)
+    
+    Johnson_County_dp05_2018 <- get_acs(geography = "county", county = "Johnson", state = "TN", table = "DP05", year = 2018, geometry = TRUE)
+    
+    #Sullivan
+    
+    #2018
+    
+    Sullivan_County_dp02_2018 <- get_acs(geography = "county", county = "Sullivan", state = "TN", table = "DP02", year = 2018, geometry = TRUE)
+    
+    Sullivan_County_dp03_2018 <- get_acs(geography = "county", county = "Sullivan", state = "TN", table = "DP03", year = 2018, geometry = TRUE)
+    
+    Sullivan_County_dp04_2018 <- get_acs(geography = "county", county = "Sullivan", state = "TN", table = "DP04", year = 2018, geometry = TRUE)
+    
+    Sullivan_County_dp05_2018 <- get_acs(geography = "county", county = "Sullivan", state = "TN", table = "DP05", year = 2018, geometry = TRUE)
+    
+    #Washington
+    
+    #2018
+    
+    Washington_County_dp02_2018 <- get_acs(geography = "county", county = "Washington", state = "TN", table = "DP02", year = 2018, geometry = TRUE)
+    
+    Washington_County_dp03_2018 <- get_acs(geography = "county", county = "Washington", state = "TN", table = "DP03", year = 2018, geometry = TRUE)
+    
+    Washington_County_dp04_2018 <- get_acs(geography = "county", county = "Washington", state = "TN", table = "DP04", year = 2018, geometry = TRUE)
+    
+    Washington_County_dp05_2018 <- get_acs(geography = "county", county = "Washington", state = "TN", table = "DP05", year = 2018, geometry = TRUE)
+    
+    #Unicoi
+    
+    #2018
+    
+    Unicoi_County_dp02_2018 <- get_acs(geography = "county", county = "Unicoi", state = "TN", table = "DP02", year = 2018, geometry = TRUE)
+    
+    Unicoi_County_dp03_2018 <- get_acs(geography = "county", county = "Unicoi", state = "TN", table = "DP03", year = 2018, geometry = TRUE)
+    
+    Unicoi_County_dp04_2018 <- get_acs(geography = "county", county = "Unicoi", state = "TN", table = "DP04", year = 2018, geometry = TRUE)
+    
+    Unicoi_County_dp05_2018 <- get_acs(geography = "county", county = "Unicoi", state = "TN", table = "DP05", year = 2018, geometry = TRUE)
+    
+    
+    ####2018####
+    
+    ##carter
+    
+    Carter_County_dp02_18 <- inner_join(Carter_County_dp02_2018, dp_table_variables_18, by = "variable")
+    
+    Carter_County_dp03_18 <- inner_join(Carter_County_dp03_2018, dp_table_variables_18, by = "variable")
+    
+    Carter_County_dp04_18 <- inner_join(Carter_County_dp04_2018, dp_table_variables_18, by = "variable")
+    
+    Carter_County_dp05_18 <- inner_join(Carter_County_dp05_2018, dp_table_variables_18, by = "variable")
+    
+    ####2018####
+    
+    ##Greene
+    
+    Greene_County_dp02_18 <- inner_join(Greene_County_dp02_2018, dp_table_variables_18, by = "variable")
+    
+    Greene_County_dp03_18 <- inner_join(Greene_County_dp03_2018, dp_table_variables_18, by = "variable")
+    
+    Greene_County_dp04_18 <- inner_join(Greene_County_dp04_2018, dp_table_variables_18, by = "variable")
+    
+    Greene_County_dp05_18 <- inner_join(Greene_County_dp05_2018, dp_table_variables_18, by = "variable")
+    
+    ####2018####
+    
+    ##Hancock
+    
+    Hancock_County_dp02_18 <- inner_join(Hancock_County_dp02_2018, dp_table_variables_18, by = "variable")
+    
+    Hancock_County_dp03_18 <- inner_join(Hancock_County_dp03_2018, dp_table_variables_18, by = "variable")
+    
+    Hancock_County_dp04_18 <- inner_join(Hancock_County_dp04_2018, dp_table_variables_18, by = "variable")
+    
+    Hancock_County_dp05_18 <- inner_join(Hancock_County_dp05_2018, dp_table_variables_18, by = "variable")  
+    
+    ####2018####
+    
+    ##Hawkins
+    
+    Hawkins_County_dp02_18 <- inner_join(Hawkins_County_dp02_2018, dp_table_variables_18, by = "variable")
+    
+    Hawkins_County_dp03_18 <- inner_join(Hawkins_County_dp03_2018, dp_table_variables_18, by = "variable")
+    
+    Hawkins_County_dp04_18 <- inner_join(Hawkins_County_dp04_2018, dp_table_variables_18, by = "variable")
+    
+    Hawkins_County_dp05_18 <- inner_join(Hawkins_County_dp05_2018, dp_table_variables_18, by = "variable")
+    
+    ####2018####
+    
+    ##Johnson
+    
+    Johnson_County_dp02_18 <- inner_join(Johnson_County_dp02_2018, dp_table_variables_18, by = "variable")
+    
+    Johnson_County_dp03_18 <- inner_join(Johnson_County_dp03_2018, dp_table_variables_18, by = "variable")
+    
+    Johnson_County_dp04_18 <- inner_join(Johnson_County_dp04_2018, dp_table_variables_18, by = "variable")
+    
+    Johnson_County_dp05_18 <- inner_join(Johnson_County_dp05_2018, dp_table_variables_18, by = "variable")
+    
+    ####2018####
+    
+    ##Sullivan
+    
+    Sullivan_County_dp02_18 <- inner_join(Sullivan_County_dp02_2018, dp_table_variables_18, by = "variable")
+    
+    Sullivan_County_dp03_18 <- inner_join(Sullivan_County_dp03_2018, dp_table_variables_18, by = "variable")
+    
+    Sullivan_County_dp04_18 <- inner_join(Sullivan_County_dp04_2018, dp_table_variables_18, by = "variable")
+    
+    Sullivan_County_dp05_18 <- inner_join(Sullivan_County_dp05_2018, dp_table_variables_18, by = "variable")
+    
+    ####2018####
+    
+    ##Washington
+    
+    Washington_County_dp02_18 <- inner_join(Washington_County_dp02_2018, dp_table_variables_18, by = "variable")
+    
+    Washington_County_dp03_18 <- inner_join(Washington_County_dp03_2018, dp_table_variables_18, by = "variable")
+    
+    Washington_County_dp04_18 <- inner_join(Washington_County_dp04_2018, dp_table_variables_18, by = "variable")
+    
+    Washington_County_dp05_18 <- inner_join(Washington_County_dp05_2018, dp_table_variables_18, by = "variable")
+    
+    ####2018####
+    
+    ##Unicoi
+    
+    Unicoi_County_dp02_18 <- inner_join(Unicoi_County_dp02_2018, dp_table_variables_18, by = "variable")
+    
+    Unicoi_County_dp03_18 <- inner_join(Unicoi_County_dp03_2018, dp_table_variables_18, by = "variable")
+    
+    Unicoi_County_dp04_18 <- inner_join(Unicoi_County_dp04_2018, dp_table_variables_18, by = "variable")
+    
+    Unicoi_County_dp05_18 <- inner_join(Unicoi_County_dp05_2018, dp_table_variables_18, by = "variable")
+    
+    #2018
+    
+    County_dp02_18 <- rbind(Carter_County_dp02_18, Greene_County_dp02_18, Hancock_County_dp02_18, Hawkins_County_dp02_18, Johnson_County_dp02_18, Sullivan_County_dp02_18, Washington_County_dp02_18, Unicoi_County_dp02_18)
+    
+    County_dp03_18 <- rbind(Carter_County_dp03_18, Greene_County_dp03_18, Hancock_County_dp03_18, Hawkins_County_dp03_18, Johnson_County_dp03_18, Sullivan_County_dp03_18, Washington_County_dp03_18, Unicoi_County_dp03_18)
+    
+    County_dp04_18 <- rbind(Carter_County_dp04_18, Greene_County_dp04_18, Hancock_County_dp04_18, Hawkins_County_dp04_18, Johnson_County_dp04_18, Sullivan_County_dp04_18, Washington_County_dp04_18, Unicoi_County_dp04_18)
+    
+    County_dp05_18 <- rbind(Carter_County_dp05_18, Greene_County_dp05_18, Hancock_County_dp05_18, Hawkins_County_dp05_18, Johnson_County_dp05_18, Sullivan_County_dp05_18, Washington_County_dp05_18, Unicoi_County_dp05_18)
+    
+    County_dp_2018 <- rbind(County_dp02_18, County_dp03_18, County_dp04_18, County_dp05_18) 
+    
+uethda_zips <- zctas(cb = TRUE, starts_with = c("27", "37"), class = "sf")
+
+uethda_zips <- uethda_zips %>%
+  rename(ZIP = ZCTA5CE10)
+
+
+```
+
+```{r load data2, include = FALSE}
+
+library(readxl)
+ARCH_spreadsheet <- read_excel("ARCH_spreadsheet.xlsx")
+
+tricities_homeless <- read_excel("tricities_homeless.xlsx")
+
+UETHDA_HOUSING <- read_excel("UETHDA_HOUSING.xlsx")
+
+HUD_UETHDA <- read_excel("HUD_UETHDA.xlsx", 
+    col_types = c("text", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric"))
+
+Community_Neighbors_Responses <- read_excel("Community Neighbors Responses.xlsx")
+
+```
+
+
+```{r arch data table, echo = FALSE}
+
+
+
+arch_only <- ARCH_spreadsheet %>%
+  filter(Region == "ARCH")
+
+datatable(arch_only, caption = "Appalachian Regional Coalition on Homelessness Point in Time Count")
+
+
+
+```
+
+```{r tricities data table, echo = FALSE}
+
+
+tricities_homeless <- tricities_homeless %>%
+  mutate(Value = round(Value, 2))
+
+datatable(tricities_homeless, caption = "Tri-cities Site Specific Point in Time Count")
+
+
+```
+
+```{r kingsport line plot, echo = FALSE, fig.height = 10, fig.width = 15}
+
+kpt_year_line <- tricities_homeless %>%
+  filter(Measure != "Population")%>%
+  filter(Region == "KPT")%>%
+  filter(str_detect(Measure, "Percent", negate = TRUE))%>%
+  mutate(Year = as.factor(Year))%>%
+  ggplot(aes(x = Year, y = Value, color = Measure, group = Measure))+
+  geom_line()+
+  geom_point()+
+  geom_dl(aes(label = Measure), method = list(dl.combine("first.points", "last.points")), cex = 0.8)+
+  ylab("Number")
+
+kpt_year_line
+
+```
+
+```{r tricites line plot, echo = FALSE, fig.height = 10, fig.width = 15}
+
+tricities_year_line <- tricities_homeless %>%
+  filter(Measure != "Population")%>%
+  filter(str_detect(Measure, "Percent", negate = TRUE))%>%
+  mutate(Year = as.factor(Year))%>%
+  ggplot(aes(x = Year, y = Value, color = Measure, group = Measure))+
+  facet_wrap(~Region)+
+  geom_line()+
+  geom_point()+
+  geom_dl(aes(label = Measure), method = list(dl.combine("first.points", "last.points")), cex = 0.8)+
+  ylab("Number")
+
+tricities_year_line
+
+```
+
+
+```{r percent year line, echo = FALSE, fig.height = 10, fig.width = 15}
+
+percent_tricities_year_line <-tricities_homeless %>%
+  filter(Measure != "Population")%>%
+  filter(str_detect(Measure, "Percent"))%>%
+  mutate(Year = as.factor(Year))%>%
+  ggplot(aes(x = Year, y = Value, color = Measure, group = Measure))+
+  facet_wrap(~Region)+
+  geom_line()+
+  geom_point()+
+  geom_dl(aes(label = Measure), method = list(dl.combine("last.points")), cex = 0.8)+
+  ylab("Percent of Total Population")
+
+percent_tricities_year_line
+
+
+```
+
+```{r HUD, echo = FALSE}
+
+hud <- HUD_UETHDA %>%
+  pivot_longer(-County, names_to = "Measure", values_to = "Value")
+
+trimmed_hud <- HUD_UETHDA[,c(1,37:38,46,47,48, 15,48,49,50,61:72)]
+
+
+
+hud <- trimmed_hud %>%
+  pivot_longer(-County, names_to = "Measure", values_to = "Value")
+
+
+
+table_hud <- trimmed_hud[,c(1,8,10,7, 2:5,12,14,16,18,20,22)]
+
+hud_no_percent <- hud %>%
+  filter(str_detect(Measure, "Percent", negate = TRUE))
+
+datatable(hud, caption = "Public Housing Characteristics")
+
+table_hud$Location <- factor(c("TN", "Carter", "Greene", "Hancock", "Hawkins", "Sullivan", "Unicoi", "Washington"), levels = c("TN", "Carter", "Greene", "Hancock", "Hawkins", "Sullivan", "Unicoi", "Washington"))
+
+
+
+hud_plot <- table_hud[,-1]
+
+```
+
+```{r hud plot, echo = FALSE, fig.height = 10, fig.width = 15, fig.cap = "Public Housing Age Group Percentages"}
+
+
+
+hud_plot_bar <- hud_plot %>%
+  pivot_longer(-Location, names_to = "Measure", values_to = "Value")%>%
+  filter(str_detect(Measure, "Age")) %>%
+  ggplot(aes(x = Location, y = Value, fill = Measure))+
+  geom_bar(stat = "identity", position = "dodge")+
+  ylab("Percent")
+
+hud_plot_bar
+
+```
+
+```{r fair market rent, echo = FALSE}
+
+
+fmr_housing <- UETHDA_HOUSING[,-1]
+
+fmr_housing$Location <- factor(c("TN", "Carter", "Greene", "Hancock", "Hawkins", "Johnson", "Sullivan", "Unicoi", "Washington"), levels = c("TN", "Carter", "Greene", "Hancock", "Hawkins", "Johnson", "Sullivan", "Unicoi", "Washington"))
+
+
+
+fmr_housing_trimmed <- fmr_housing[,-c(1,2,3)]
+
+
+
+long_fmr <- fmr_housing_trimmed %>%
+  pivot_longer(-Location, names_to = "Measure", values_to = "Values")
+
+
+
+fmr_housing_table <- fmr_housing_trimmed[,c(45,3,8,9,21,22,14,15,13,16,31,32)]
+
+long_fmr_table <- fmr_housing_table %>%
+  pivot_longer(-Location, names_to = "Measure", values_to = "Values") %>%
+  mutate(Value = round(Values, 2))
+
+wide_fmr_table <- long_fmr_table %>%
+  select(Location, Measure, Value) %>%
+  pivot_wider(names_from = "Measure", values_from = "Value")
+
+datatable(long_fmr_table[,-3], caption = "Fair Market Rent Characteristics")
+
+
+
+
+```
+
+```{r fair market rent plot 1, echo = FALSE, fig.height = 10, fig.width =15, fig.cap="Hours Worked at Minimum Wage to Afford Rent"}
+
+fmr_plot_1 <- long_fmr_table%>%
+  filter(str_detect(Measure, "hours"))%>%
+  ggplot(aes(y = Location, x = Value, fill = Measure))+
+  geom_bar(stat = "identity", position = "dodge")+
+  xlab("Hours Worked per Week")
+
+fmr_plot_1
+
+```
+
+```{r fair market rent plot 2, echo = FALSE, fig.height = 10, fig.width = 15, fig.cap ="Affordable Rent" }
+fmr_plot_2 <-long_fmr_table %>%
+  filter(Measure == "Two bedroom FMR"|
+           Measure == "Rent affordable at median renter household income"|
+           Measure == "Rent affordable at 30% AMI")%>%
+  ggplot(aes(y = Location, x = Value, fill = Measure))+
+  geom_bar(stat = "identity", position = "dodge")+
+  xlab("Dollars")
+
+fmr_plot_2
+```
+
+# Housing Characteristics
+
+```{r housing data tables, echo = FALSE}
+housing_units_vars_18 <- c("DP04_0001", "DP04_0002", "DP04_0003", "DP04_0004", "DP04_0005", "DP04_0014", "DP04_0017", "DP04_0018", "DP04_0019", "DP04_0020", "DP04_0021", "DP04_0022",
+                               "DP04_0023", "DP04_0024", "DP04_0025", "DP04_0026", "DP04_0037", "DP04_0046", "DP04_0047", "DP04_0048", "DP04_0049", "DP04_0051", "DP04_0052", "DP04_0053",
+                               "DP04_0054", "DP04_0055", "DP04_0056")
+    
+    housing_units_percent_vars_18 <- c("DP04_0001P", "DP04_0002P", "DP04_0003P", "DP04_0004P", "DP04_0005P", "DP04_0014P", "DP04_0017P", "DP04_0018P", "DP04_0019P", "DP04_0020P", "DP04_0021P", "DP04_0022P",
+                                      "DP04_0023P", "DP04_0024P", "DP04_0025P", "DP04_0026P", "DP04_0037P", "DP04_0046P", "DP04_0047P", "DP04_0048P", "DP04_0049P", "DP04_0051P", "DP04_0052P", "DP04_0053P",
+                                      "DP04_0054P", "DP04_0055P", "DP04_0056P")
+    
+    housing_units_vars_names_18 <- c("Total Housing Units", "Occupied Housing Units", "Vacant Housing Units", "Homeowner Vacancy Rate", "Rental Vacancy Rate", "Mobile Homes", "Homes Built 2014 or Later",
+                                     "Homes Built 2010-2013", "Homes Built 2000-2009", "Homes Built 1990-1999", "Homes Built 1980-1989", "Homes Built 1970-1979", "Homes Built 1960-1969", "Homes Built 1950-1959",
+                                     "Homes Built 1940-1949", "Homes Built 1939 or Earlier", "Median Number of Rooms per Unit", "Owner Occupied Housing Units", "Renter Occupied Housing Units", "Average Houshold Size of Owner Occupied Units",
+                                     "Average Household Size of Renter Occupied Units", "Occupied Housing Units Moved Into: 2017 or Later", "Occupied Housing Units Moved Into: 2015-2016", "Occupied Housing Units Moved Into: 2010-2014",
+                                     "Occupied Housing Units Moved Into: 2000-2009", "Occupied Housing Units Moved Into: 1990-1999", "Occupied Housing Units Moved Into: 1989 and Earlier")
+
+    
+    
+    df_housing_units_tract_counts_18 <- dp_2018 %>%
+      filter(variable %in% housing_units_vars_18)
+    
+    df_housing_units_county_counts_18 <- County_dp_2018 %>%
+      filter(variable %in% housing_units_vars_18)
+    
+    df_housing_units_tract_percent_18 <- dp_2018 %>%
+      filter(variable %in% housing_units_percent_vars_18)
+    
+    df_housing_units_county_percent_18 <- County_dp_2018 %>%
+      filter(variable %in% housing_units_percent_vars_18)
+    
+     ##combine the percents into one table
+    
+    df_housing_units_tract_18 <- cbind(housing_units_vars_names_18, df_housing_units_tract_counts_18, df_housing_units_tract_percent_18)
+    
+    df_housing_units_county_18 <- cbind(housing_units_vars_names_18, df_housing_units_county_counts_18, df_housing_units_county_percent_18)
+    
+    trimmed_df_housing_units_tract_18 <- df_housing_units_tract_18[,c(1,3,5,6,12,13)] #these are the ones with the location data
+    
+    trimmed_df_housing_units_county_18 <- df_housing_units_county_18[,c(1,3,5,6,12,13)] #these are the ones with the location data
+    
+    
+    ##get ride of location data for the tract/county
+    
+    data_table_housing_units_tract_18 <- st_set_geometry(trimmed_df_housing_units_tract_18, NULL)
+    
+    data_table_housing_units_county_18 <- st_set_geometry(trimmed_df_housing_units_county_18, NULL)
+    
+    ##rename the columns 
+    
+    housing_units_table_tract_names <- c("Housing Unit Measure", "Census Tract", "Count", "Margin of Error", "Percent", "Percent Margin of Error")
+    
+    housing_units_table_county_names <- c("Housing Unit Measure", "County", "Count", "Margin of Error", "Percent", "Percent Margin of Error")  
+    
+    names(data_table_housing_units_tract_18) <- housing_units_table_tract_names
+    
+    names(data_table_housing_units_county_18) <- housing_units_table_county_names
+
+    ##make the data tables
+    
+    housing_units_tract_data_table_18 <- datatable(data_table_housing_units_tract_18, caption = "Housing Unit Measures of Census Tract Groups for Upper East Tennessee 2018")
+    
+    housing_units_county_data_table_18 <- datatable(data_table_housing_units_county_18, caption = "Housing Unit Measures for Counties in Upper East Tennessee 2018")
+    
+    housing_units_tract_data_table_18
+    
+    housing_units_county_data_table_18
+    
+```
+
+# Renter Map
+
+```{r renter map, echo = FALSE}
+
+    ##service housing_unitsupations map 
+    
+    housing_units_tract_map_names <- c("Housing Unit Measure", "Census Tract", "Count", "Count MOE", "Percent", "Percent MOE", "geometry")
+    
+    housing_units_county_map_names <- c("Housing Unit Measure", "County", "Count", "Count MOE", "Percent", "Percent MOE", "geometry")
+        
+    names(trimmed_df_housing_units_county_18) <- housing_units_county_map_names
+    
+    names(trimmed_df_housing_units_tract_18) <- housing_units_tract_map_names
+    
+    #renter map 
+    
+    renter_county <- trimmed_df_housing_units_county_18 %>%
+      filter(`Housing Unit Measure` == "Renter Occupied Housing Units")
+    
+    renter_tract <- trimmed_df_housing_units_tract_18 %>%
+      filter(`Housing Unit Measure` == "Renter Occupied Housing Units")
+    
+    renter_map <- mapview(list(renter_county, renter_tract),
+                          zcol = list("Percent", "Percent"),
+                          layer.name = list("Percent of Renter Occupied Units County", "Percent of Renter Occupied Units Tract"),
+                          legend = list(FALSE, TRUE))
+    
+    renter_map
+    
+
+```
+
+# Rental Vacancy Map
+
+```{r rental vacancy map, echo = FALSE}
+
+#rental vacancy rate map
+    
+    rental_county <- trimmed_df_housing_units_county_18 %>%
+      filter(`Housing Unit Measure` == "Rental Vacancy Rate")
+    
+    rental_tract <- trimmed_df_housing_units_tract_18 %>%
+      filter(`Housing Unit Measure` == "Rental Vacancy Rate")
+    
+    rental_map <- mapview(list(rental_county, rental_tract),
+                          zcol = list("Count", "Count"),
+                          layer.name = list("Rental Vacancy Rate County", "Rental Vacancy Rate Tract"),
+                          legend = list(FALSE, TRUE))
+    
+    rental_map
+
+```
+
+
+# Housing Affordability
+
+```{r housing affordability data tables, echo = FALSE}
+
+#affordability 
+    
+    afford_vars_18 <- c("DP04_0110", "DP04_0111", "DP04_0112", "DP04_0113", "DP04_0114", "DP04_0115", "DP04_0123", "DP04_0124", "DP04_0126", "DP04_0127", "DP04_0128", 
+                        "DP04_0129", "DP04_0130", "DP04_0134", "DP04_0137", "DP04_0138", "DP04_0139", "DP04_0140", "DP04_0141", "DP04_0142")
+    
+    afford_percent_vars_18 <- c("DP04_0110P", "DP04_0111P", "DP04_0112P", "DP04_0113P", "DP04_0114P", "DP04_0115P", "DP04_0123P", "DP04_0124P", "DP04_0126P", "DP04_0127P", "DP04_0128P", 
+                                "DP04_0129P", "DP04_0130P", "DP04_0134P", "DP04_0137P", "DP04_0138P", "DP04_0139P", "DP04_0140P", "DP04_0141P", "DP04_0142P")
+    
+    afford_vars_names_18 <- c("Housing Units with a Mortgage", "Housing Units with a Mortgage SMOCAPI Less than 20%", "Housing Units with a Mortgage SMOCAPI 20-24.9%", "Housing Units with a Mortgage SMOCAPI 25-29.9%", 
+                              "Housing Units with a Mortgage SMOCAPI 30-34.9%", "Housing Units with a Mortgage SMOCAPI 35% or More", "Housing Units Without a Mortgage SMOCAPI 30-34.9%", "Housing Units Without a Mortgage SMOCAPI 35% or More",
+                              "Total Occupied Units Paying Rent", "Rent Less Than $500", "Rent $500-$999", "Rent $1000-$1499", "Rent $1500-$1999", "Median Rent", "GRAPI Less than 15%", "GRAPI 15-19.9%", "GRAPI 20-24.9%", "GRAPI 25-29.9%",
+                              "GRAPI 30-34.9%", "GRAPI 35% or More")
+
+    df_afford_tract_counts_18 <- dp_2018 %>%
+      filter(variable %in% afford_vars_18)
+    
+    df_afford_county_counts_18 <- County_dp_2018 %>%
+      filter(variable %in% afford_vars_18)
+    
+    df_afford_tract_percent_18 <- dp_2018 %>%
+      filter(variable %in% afford_percent_vars_18)
+    
+    df_afford_county_percent_18 <- County_dp_2018 %>%
+      filter(variable %in% afford_percent_vars_18)
+    
+     ##combine the percents into one table
+    
+    df_afford_tract_18 <- cbind(afford_vars_names_18, df_afford_tract_counts_18, df_afford_tract_percent_18)
+    
+    df_afford_county_18 <- cbind(afford_vars_names_18, df_afford_county_counts_18, df_afford_county_percent_18)
+    
+     
+    trimmed_df_afford_tract_18 <- df_afford_tract_18[,c(1,3,5,6,12,13)] #these are the ones with the location data
+    
+    trimmed_df_afford_county_18 <- df_afford_county_18[,c(1,3,5,6,12,13)] #these are the ones with the location data
+    
+        ##get ride of location data for the tract/county
+    
+    data_table_afford_tract_18 <- st_set_geometry(trimmed_df_afford_tract_18, NULL)
+    
+    data_table_afford_county_18 <- st_set_geometry(trimmed_df_afford_county_18, NULL)
+    
+       ##rename the columns 
+    
+    #### add a new row for GRAPI and SMOCI above 30
+    
+    afford_table_tract_names <- c("Affordability Measure", "Census Tract", "Count", "Margin of Error", "Percent", "Percent Margin of Error")
+    
+    afford_table_county_names <- c("Affordability Measure", "County", "Count", "Margin of Error", "Percent", "Percent Margin of Error") 
+    
+    names(data_table_afford_tract_18) <- afford_table_tract_names
+    
+    names(data_table_afford_county_18) <- afford_table_county_names
+    
+     
+        tract_g1_18 <- data_table_afford_tract_18 %>%
+          filter(`Affordability Measure` == "GRAPI 30-34.9%")
+        
+        tract_g2_18 <- data_table_afford_tract_18 %>%
+          filter(`Affordability Measure` == "GRAPI 35% or More")
+        
+        tract_g3_18 <- left_join(tract_g1_18, tract_g2_18, by = "Census Tract")
+        
+        tract_grapi30_18 <- tract_g3_18 %>%
+          transmute("Affordability Measure" = "GRAPI 30% or More",
+                    "Census Tract" = `Census Tract`,
+                      "Count" = Count.x + Count.y,
+                    "Margin of Error" = round(sqrt(`Margin of Error.x`^2 + `Margin of Error.y`^2),2),
+                    "Percent" = Percent.x + Percent.y,
+                    "Percent Margin of Error" = round(sqrt(`Percent Margin of Error.x`^2 + `Percent Margin of Error.y`^2),2))
+        
+        tract_s1_18 <- data_table_afford_tract_18 %>%
+          filter(`Affordability Measure` == "Housing Units with a Mortgage SMOCAPI 30-34.9%")
+                    
+        tract_s2_18 <- data_table_afford_tract_18 %>%
+          filter(`Affordability Measure` == "Housing Units with a Mortgage SMOCAPI 35% or More")
+        
+        tract_s3_18 <-left_join(tract_s1_18, tract_s2_18, by = "Census Tract")
+        
+        tract_smocapi30_18 <-  tract_s3_18%>%
+          transmute("Affordability Measure" = "Housing Units with a Mortgage SMOCAPI 30% or More",
+                    "Census Tract" = `Census Tract`,
+                    "Count" = Count.x + Count.y,
+                    "Margin of Error" = round(sqrt(`Margin of Error.x`^2 + `Margin of Error.y`^2),2),
+                    "Percent" = Percent.x + Percent.y,
+                    "Percent Margin of Error" = round(sqrt(`Percent Margin of Error.x`^2 + `Percent Margin of Error.y`^2),2))
+        
+        tract_x1_18 <- data_table_afford_tract_18 %>%
+          filter(`Affordability Measure` == "Housing Units Without a Mortgage SMOCAPI 30-34.9%")
+        
+        tract_x2_18 <- data_table_afford_tract_18 %>%
+          filter(`Affordability Measure` == "Housing Units Without a Mortgage SMOCAPI 35% or More")
+        
+        tract_x3_18 <- left_join(tract_x1_18, tract_x2_18, by = "Census Tract")
+        
+        tract_with_out_smocapi30_18 <-  tract_s3_18%>%
+          transmute("Affordability Measure" = "Housing Units without a Mortgage SMOCAPI 30% or More",
+                    "Census Tract" = `Census Tract`,
+                    "Count" = Count.x + Count.y,
+                    "Margin of Error" = round(sqrt(`Margin of Error.x`^2 + `Margin of Error.y`^2),2),
+                    "Percent" = Percent.x + Percent.y,
+                    "Percent Margin of Error" = round(sqrt(`Percent Margin of Error.x`^2 + `Percent Margin of Error.y`^2),2))
+        
+        data_table_afford_tract_18 <- rbind(data_table_afford_tract_18, tract_grapi30_18, tract_smocapi30_18, tract_with_out_smocapi30_18)
+        
+        #county
+        
+        county_g1_18 <- data_table_afford_county_18 %>%
+          filter(`Affordability Measure` == "GRAPI 30-34.9%")
+        
+        county_g2_18 <- data_table_afford_county_18 %>%
+          filter(`Affordability Measure` == "GRAPI 35% or More")
+        
+        county_g3_18 <- left_join(county_g1_18, county_g2_18, by = "County")
+        
+        county_grapi30_18 <- county_g3_18 %>%
+          transmute("Affordability Measure" = "GRAPI 30% or More",
+                    "County" = `County`,
+                    "Count" = Count.x + Count.y,
+                    "Margin of Error" = round(sqrt(`Margin of Error.x`^2 + `Margin of Error.y`^2),2),
+                    "Percent" = Percent.x + Percent.y,
+                    "Percent Margin of Error" = round(sqrt(`Percent Margin of Error.x`^2 + `Percent Margin of Error.y`^2),2))
+        
+        county_s1_18 <- data_table_afford_county_18 %>%
+          filter(`Affordability Measure` == "Housing Units with a Mortgage SMOCAPI 30-34.9%")
+        
+        county_s2_18 <- data_table_afford_county_18 %>%
+          filter(`Affordability Measure` == "Housing Units with a Mortgage SMOCAPI 35% or More")
+        
+        county_s3_18 <-left_join(county_s1_18, county_s2_18, by = "County")
+        
+        county_smocapi30_18 <-  county_s3_18%>%
+          transmute("Affordability Measure" = "Housing Units with a Mortgage SMOCAPI 30% or More",
+                    "County" = `County`,
+                    "Count" = Count.x + Count.y,
+                    "Margin of Error" = round(sqrt(`Margin of Error.x`^2 + `Margin of Error.y`^2),2),
+                    "Percent" = Percent.x + Percent.y,
+                    "Percent Margin of Error" = round(sqrt(`Percent Margin of Error.x`^2 + `Percent Margin of Error.y`^2),2))
+        
+        county_x1_18 <- data_table_afford_county_18 %>%
+          filter(`Affordability Measure` == "Housing Units Without a Mortgage SMOCAPI 30-34.9%")
+        
+        county_x2_18 <- data_table_afford_county_18 %>%
+          filter(`Affordability Measure` == "Housing Units Without a Mortgage SMOCAPI 35% or More")
+        
+        county_x3_18 <- left_join(county_x1_18, county_x2_18, by = "County")
+        
+        county_with_out_smocapi30_18 <-  county_s3_18%>%
+          transmute("Affordability Measure" = "Housing Units without a Mortgage SMOCAPI 30% or More",
+                    "County" = `County`,
+                    "Count" = Count.x + Count.y,
+                    "Margin of Error" = round(sqrt(`Margin of Error.x`^2 + `Margin of Error.y`^2),2),
+                    "Percent" = Percent.x + Percent.y,
+                    "Percent Margin of Error" = round(sqrt(`Percent Margin of Error.x`^2 + `Percent Margin of Error.y`^2),2))
+        
+        data_table_afford_county_18 <- rbind(data_table_afford_county_18, county_grapi30_18, county_smocapi30_18, county_with_out_smocapi30_18)                            
+        
+          ##make the data tables
+    
+    afford_tract_data_table_18 <- datatable(data_table_afford_tract_18, caption = "Affordability Measures of Census Tract Groups for Upper East Tennessee 2018")
+    
+    afford_county_data_table_18 <- datatable(data_table_afford_county_18, caption = "Affordability Measures for Counties in Upper East Tennessee 2018")
+    
+    afford_tract_data_table_18
+    
+    afford_county_data_table_18
+
+```
+
+# Median Rent Map
+
+```{r median rent map, echo = FALSE}
+
+    #median rent map
+    
+    afford_tract_map_names <- c("Affordability Measure", "Census Tract", "Count", "Count MOE", "Percent", "Percent MOE", "geometry")
+    
+    afford_county_map_names <- c("Affordability Measure", "County", "Count", "Count MOE", "Percent", "Percent MOE", "geometry")
+    
+    names(trimmed_df_afford_county_18) <- afford_county_map_names
+    
+    names(trimmed_df_afford_tract_18) <- afford_tract_map_names
+    
+    median_rent_county <- trimmed_df_afford_county_18 %>%
+      filter(`Affordability Measure` == "Median Rent")
+    
+    median_rent_tract <- trimmed_df_afford_tract_18 %>%
+      filter(`Affordability Measure` == "Median Rent")
+    
+    median_rent_map <- mapview(list(median_rent_county, median_rent_tract),
+                               zcol = list("Count", "Count"),
+                               layer.name = list("Median Rent County", "Median Rent Tract"),
+                               legend = list(FALSE, TRUE))
+    
+    median_rent_map
+    
+
+```
+
+# GRAPI above 35% Map
+
+```{r grapi35 map, echo = FALSE}
+
+#grapi above 35% map
+    
+    grapi35_county <- trimmed_df_afford_county_18 %>%
+      filter(`Affordability Measure` == "GRAPI 35% or More")
+    
+    grapi35_tract <- trimmed_df_afford_tract_18 %>%
+      filter(`Affordability Measure` == "GRAPI 35% or More")
+    
+    grapi35_map <- mapview(list(grapi35_county, grapi35_tract),
+                           zcol = list("Percent", "Percent"),
+                           layer.name = list("GRAPI Above 35% County", "GRAPI Above 35% Tract"),
+                           legend = list(FALSE, TRUE))
+    
+    grapi35_map
+
+```
+
+# Rent Affordability Map
+
+```{r rent affordability map, echo =  FALSE}
+
+   rent_afford_map <- median_rent_map + grapi35_map
+    
+  rent_afford_map
+
+```
+
+# GRAPI Above 30% Map
+
+```{r grapi above 30 map, echo = FALSE}
+
+
+    ####grapi 30+ map 
+    
+    afford_tract_map_names <- c("Affordability Measure", "Census Tract", "Count", "Count MOE", "Percent", "Percent MOE", "geometry")
+    
+    afford_county_map_names <- c("Affordability Measure", "County", "Count", "Count MOE", "Percent", "Percent MOE", "geometry")
+    
+    names(trimmed_df_afford_county_18) <- afford_county_map_names
+    
+    names(trimmed_df_afford_tract_18) <- afford_tract_map_names
+    
+    
+    maptract_g1_18 <- trimmed_df_afford_tract_18 %>%
+      filter(`Affordability Measure` == "GRAPI 30-34.9%")
+    
+    maptract_g2_18 <- data_table_afford_tract_18 %>%
+      filter(`Affordability Measure` == "GRAPI 35% or More")
+    
+    maptract_g3_18 <- left_join(maptract_g1_18, maptract_g2_18, by = "Census Tract")
+    
+    maptract_grapi30_18 <- maptract_g3_18 %>%
+      transmute("Affordability Measure" = "GRAPI 30% or More",
+                "Census Tract" = `Census Tract`,
+                "Count" = Count.x + Count.y,
+                "Margin of Error" = round(sqrt(`Count MOE`^2 + `Margin of Error`^2),2),
+                "Percent" = Percent.x + Percent.y,
+                "Percent Margin of Error" = round(sqrt(`Percent MOE`^2 + `Percent Margin of Error`^2),2))
+    
+    maptract_s1_18 <- trimmed_df_afford_tract_18 %>%
+      filter(`Affordability Measure` == "Housing Units with a Mortgage SMOCAPI 30-34.9%")
+    
+    maptract_s2_18 <- data_table_afford_tract_18 %>%
+      filter(`Affordability Measure` == "Housing Units with a Mortgage SMOCAPI 35% or More")
+    
+    maptract_s3_18 <- left_join(maptract_s1_18, maptract_s2_18, by = "Census Tract")
+  
+    maptract_smocapi30_18 <- maptract_s3_18 %>%
+      transmute("Affordability Measure" = "Housing Units with a Mortgage SMOCAPI 30% or More",
+                "Census Tract" = `Census Tract`,
+                "Count" = Count.x + Count.y,
+                "Margin of Error" = round(sqrt(`Count MOE`^2 + `Margin of Error`^2),2),
+                "Percent" = Percent.x + Percent.y,
+                "Percent Margin of Error" = round(sqrt(`Percent MOE`^2 + `Percent Margin of Error`^2),2))
+    
+    maptract_x1_18 <- trimmed_df_afford_tract_18 %>%
+      filter(`Affordability Measure` == "Housing Units Without a Mortgage SMOCAPI 30-34.9%")
+    
+    maptract_x2_18 <- data_table_afford_tract_18 %>%
+      filter(`Affordability Measure` == "Housing Units Without a Mortgage SMOCAPI 35% or More")
+    
+    maptract_x3_18 <- left_join(maptract_x1_18, maptract_x2_18, by = "Census Tract")
+    
+    maptract_smocapi30_without_18 <- maptract_x3_18 %>%
+      transmute("Affordability Measure" = "Housing Units without a Mortgage SMOCAPI 30% or More",
+                "Census Tract" = `Census Tract`,
+                "Count" = Count.x + Count.y,
+                "Margin of Error" = round(sqrt(`Count MOE`^2 + `Margin of Error`^2),2),
+                "Percent" = Percent.x + Percent.y,
+                "Percent Margin of Error" = round(sqrt(`Percent MOE`^2 + `Percent Margin of Error`^2),2))
+    
+    
+    
+    mapcounty_g1_18 <- trimmed_df_afford_county_18 %>%
+      filter(`Affordability Measure` == "GRAPI 30-34.9%")
+    
+    mapcounty_g2_18 <- data_table_afford_county_18 %>%
+      filter(`Affordability Measure` == "GRAPI 35% or More")
+    
+    mapcounty_g3_18 <- left_join(mapcounty_g1_18, mapcounty_g2_18, by = "County")
+    
+    mapcounty_grapi30_18 <- mapcounty_g3_18 %>%
+      transmute("Affordability Measure" = "GRAPI 30% or More",
+                "County" = `County`,
+                "Count" = Count.x + Count.y,
+                "Margin of Error" = round(sqrt(`Count MOE`^2 + `Margin of Error`^2),2),
+                "Percent" = Percent.x + Percent.y,
+                "Percent Margin of Error" = round(sqrt(`Percent MOE`^2 + `Percent Margin of Error`^2),2))
+    
+    mapcounty_s1_18 <- trimmed_df_afford_county_18 %>%
+      filter(`Affordability Measure` == "Housing Units with a Mortgage SMOCAPI 30-34.9%")
+    
+    mapcounty_s2_18 <- data_table_afford_county_18 %>%
+      filter(`Affordability Measure` == "Housing Units with a Mortgage SMOCAPI 35% or More")
+    
+    mapcounty_s3_18 <- left_join(mapcounty_s1_18, mapcounty_s2_18, by = "County")
+    
+    mapcounty_smocapi30_18 <- mapcounty_s3_18 %>%
+      transmute("Affordability Measure" = "Housing Units with a Mortgage SMOCAPI 30% or More",
+                "County" = `County`,
+                "Count" = Count.x + Count.y,
+                "Margin of Error" = round(sqrt(`Count MOE`^2 + `Margin of Error`^2),2),
+                "Percent" = Percent.x + Percent.y,
+                "Percent Margin of Error" = round(sqrt(`Percent MOE`^2 + `Percent Margin of Error`^2),2))
+    
+    mapcounty_x1_18 <- trimmed_df_afford_county_18 %>%
+      filter(`Affordability Measure` == "Housing Units Without a Mortgage SMOCAPI 30-34.9%")
+    
+    mapcounty_x2_18 <- data_table_afford_county_18 %>%
+      filter(`Affordability Measure` == "Housing Units Without a Mortgage SMOCAPI 35% or More")
+    
+    mapcounty_x3_18 <- left_join(mapcounty_x1_18, mapcounty_x2_18, by = "County")
+    
+    mapcounty_smocapi30_without_18 <- mapcounty_x3_18 %>%
+      transmute("Affordability Measure" = "Housing Units Without a Mortgage SMOCAPI 30% or More",
+                "County" = `County`,
+                "Count" = Count.x + Count.y,
+                "Margin of Error" = round(sqrt(`Count MOE`^2 + `Margin of Error`^2),2),
+                "Percent" = Percent.x + Percent.y,
+                "Percent Margin of Error" = round(sqrt(`Percent MOE`^2 + `Percent Margin of Error`^2),2))
+    
+    grapi_above_30_map <- mapview(list(mapcounty_grapi30_18, maptract_grapi30_18),
+                           zcol = list("Percent", "Percent"),
+                           layer.name = list("GRAPI Above 30% County", "GRAPI Above 30% Tract"),
+                           legend = list(FALSE, TRUE))
+    grapi_above_30_map
+
+```
+
+# SMOCAPI Above 30% Map
+
+```{r smocapi 30 map, echo = FALSE}
+
+    smocapi_above_30_map <- mapview(list(mapcounty_smocapi30_18, maptract_smocapi30_18),
+                                  zcol = list("Percent", "Percent"),
+                                  layer.name = list("SMOCAPI Above 30% County", "SMOCAPI Above 30% Tract"),
+                                  legend = list(FALSE, TRUE))
+
+    smocapi_above_30_map
+    
+
+```
+
+
+```{r survey responsesxxx, echo = FALSE}
+
+neighbors_main <- Community_Neighbors_Responses
+
+neighbors_new_names <- c("ID", "County", "Race", "ZIP", "Age", "You SS Pre", "You Food Pre", "You ED Pre", "You Crime Pre",
+                         "You Employment Pre", "You Housing Pre", "You GED Pre", "You ESL Pre", "You Trans Pre", "You Job Skills Pre", 
+                         "You Financial Pre", "You Relationships Pre", "You Rent Pre", "You Weatherization Pre", "You Health Pre", 
+                         "You Rx Pre", "You Addiction Pre", "You Legal Pre", "You Childcare Pre", "You After School Pre",
+                         "You SS Post", "You Food Post", "You ED Post", "You Crime Post",
+                         "You Employment Post", "You Housing Post", "You GED Post", "You ESL Post", "You Trans Post", "You Job Skills Post", 
+                         "You Financial Post", "You Relationships Post", "You Rent Post", "You Weatherization Post", "You Health Post", 
+                         "You Rx Post", "You Addiction Post", "You Legal Post", "You Childcare Post", "You After School Post",
+                         "Community SS Pre", "Community Food Pre", "Community ED Pre", "Community Crime Pre",
+                         "Community Employment Pre", "Community Housing Pre", "Community GED Pre", "Community ESL Pre", "Community Trans Pre", "Community Job Skills Pre", 
+                         "Community Financial Pre", "Community Relationships Pre", "Community Rent Pre", "Community Weatherization Pre", "Community Health Pre", 
+                         "Community Rx Pre", "Community Addiction Pre", "Community Legal Pre", "Community Childcare Pre", "Community After School Pre",
+                         "Community SS Post", "Community Food Post", "Community ED Post", "Community Crime Post",
+                         "Community Employment Post", "Community Housing Post", "Community GED Post", "Community ESL Post", "Community Trans Post", "Community Job Skills Post", 
+                         "Community Financial Post", "Community Relationships Post", "Community Rent Post", "Community Weatherization Post", "Community Health Post", 
+                         "Community Rx Post", "Community Addiction Post", "Community Legal Post", "Community Childcare Post", "Community After School Post",
+                         "Other Services")
+
+names(neighbors_main) <- neighbors_new_names
+
+uethda_sf <- st_as_sf(uethda_zips)
+
+names(uethda_sf) <- c("ZIP", "A", "B", "C", "D", "geometry")
+ 
+neighbors_with_zips <- merge(neighbors_main, uethda_sf, by = "ZIP")
+
+neighbors_sf <- st_as_sf(neighbors_with_zips)
+
+
+#### split the df up into sections ####
+
+
+you_pre <- neighbors_main[,2:25]
+
+you_post <- neighbors_main[,c(2:5, 26:45)]
+
+community_pre <- neighbors_main[,c(2:5, 46:65 )]
+
+community_post <- neighbors_main[,c(2:5, 66:85)]
+
+
+you_pre_map <- neighbors_sf[,c(2:25,87:91)]
+
+you_post_map <- neighbors_sf[,c(2:5, 26:45, 87:91)]
+
+community_pre_map <- neighbors_sf[,c(2:5, 46:65, 87:91)]
+
+community_post_map <- neighbors_sf[,c(2:5, 66:85, 87:91)]
+
+
+
+```
+
+# Housing Heating Sources and Misc Measures
+
+```{r heating data table, echo = FALSE}
+    #heating
+    
+    heating_vars_18 <- c("DP04_0062", "DP04_0063", "DP04_0064", "DP04_0065", "DP04_0066", "DP04_0067", "DP04_0068", "DP04_0069",
+                         "DP04_0070", "DP04_0071", "DP04_0073", "DP04_0074", "DP04_0075", "DP04_0079")
+    
+    heating_percent_vars_18 <- c("DP04_0062P", "DP04_0063P", "DP04_0064P", "DP04_0065P", "DP04_0066P", "DP04_0067P", "DP04_0068P", "DP04_0069P",
+                                 "DP04_0070P", "DP04_0071P", "DP04_0073P", "DP04_0074P", "DP04_0075P", "DP04_0079P")
+    
+    heating_vars_names_18 <- c("Total Occupied Housing Units", "Occupied Housing Units Heated by Utility Gas", "Occupied Housing Units Heated by Bottled, Tank, or LP Gas",
+                               "Occupied Housing Units Heated by Electric Heating", "Occupied Housing Units Heated by Fuel Oil or Kerosene", "Occupied Housing Units Heated by Coal",
+                               "Occupied Housing Units Heated by Wood", "Occupied Housing Units Heated by Solar", "Occupied Housing Units Heated by Other Fuel", "Occupied Housing Units No Heat Source",
+                               "Occupied Housing Units Lacking Complete Plumbing", "Occupied Housing Units Lacking a Complete Kitchen", "Occupied Housing Units with No Telephone Service Available",
+                               "Occupied Housing Units with Greater than 1.51 Occupants per Room")
+    
+    
+    
+    df_heating_tract_counts_18 <- dp_2018 %>%
+      filter(variable %in% heating_vars_18)
+    
+    df_heating_county_counts_18 <- County_dp_2018 %>%
+      filter(variable %in% heating_vars_18)
+    
+    df_heating_tract_percent_18 <- dp_2018 %>%
+      filter(variable %in% heating_percent_vars_18)
+    
+    df_heating_county_percent_18 <- County_dp_2018 %>%
+      filter(variable %in% heating_percent_vars_18)
+
+
+    ##combine the percents into one table
+    
+    df_heating_tract_18 <- cbind(heating_vars_names_18, df_heating_tract_counts_18, df_heating_tract_percent_18)
+    
+    df_heating_county_18 <- cbind(heating_vars_names_18, df_heating_county_counts_18, df_heating_county_percent_18)    
+    
+    
+    trimmed_df_heating_tract_18 <- df_heating_tract_18[,c(1,3,5,6,12,13)] #these are the ones with the location data
+    
+    trimmed_df_heating_county_18 <- df_heating_county_18[,c(1,3,5,6,12,13)] #these are the ones with the location data
+    
+        
+    ##get ride of location data for the tract/county
+    
+    data_table_heating_tract_18 <- st_set_geometry(trimmed_df_heating_tract_18, NULL)
+    
+    data_table_heating_county_18 <- st_set_geometry(trimmed_df_heating_county_18, NULL)
+    
+    ##rename the columns 
+    
+    
+    heating_table_tract_names <- c("Housing Unit Measure", "Census Tract", "Count", "Margin of Error", "Percent", "Percent Margin of Error")
+    
+    heating_table_county_names <- c("Housing Unit Measure", "County", "Count", "Margin of Error", "Percent", "Percent Margin of Error")  
+    
+    names(data_table_heating_tract_18) <- heating_table_tract_names
+    
+    names(data_table_heating_county_18) <- heating_table_county_names
+    
+    ##make the data tables
+    
+    heating_tract_data_table_18 <- datatable(data_table_heating_tract_18, caption = "Heating and Misc Housing Unit Measures of Census Tract Groups for Upper East Tennessee 2018")
+    
+    heating_county_data_table_18 <- datatable(data_table_heating_county_18, caption = "Heating and Misc Housing Unit Measures for Counties in Upper East Tennessee 2018")
+    
+       
+    heating_tract_data_table_18
+    
+    heating_county_data_table_18
+    
+```
+
+# No Heat Source Map
+
+```{r heating source map, echo = FALSE}
+##service heatingupations map 
+    
+    heating_tract_map_names <- c("Heating and Misc Housing Unit Measure", "Census Tract", "Count", "Count MOE", "Percent", "Percent MOE", "geometry")
+    
+    heating_county_map_names <- c("Heating and Misc Housing Unit Measure", "County", "Count", "Count MOE", "Percent", "Percent MOE", "geometry")
+    
+    names(trimmed_df_heating_county_18) <- heating_county_map_names
+    
+    names(trimmed_df_heating_tract_18) <- heating_tract_map_names
+    
+    
+    #no heat source  map 
+    
+    no_heat_source_county <- trimmed_df_heating_county_18 %>%
+      filter(`Heating and Misc Housing Unit Measure` == "Occupied Housing Units No Heat Source")
+    
+    
+    no_heat_source_tract <- trimmed_df_heating_tract_18 %>%
+      filter(`Heating and Misc Housing Unit Measure` == "Occupied Housing Units No Heat Source")
+    
+    no_heat_source_map <- mapview(list(no_heat_source_county, no_heat_source_tract),
+                                  zcol = list("Percent", "Percent"),
+                                  layer.name = list("Percent of Occupied Housing Units with No Heat Source County", "Percent of Occupied Housing Units with No Heat Source Tract"),
+                                  legend = list(FALSE, TRUE))
+    
+    no_heat_source_map
+    
+
+```
+
+```{r question 5, echo = FALSE}
+### Question 5 ###
+library(dplyr)
+
+long_you_pre <- you_pre %>%
+  pivot_longer(-c(County, Race, ZIP, Age), names_to = "Measure", values_to = "Answer")
+
+percent_yes_for_each_question <- long_you_pre %>%
+  group_by(Measure) %>%
+  filter(Answer == "Yes")%>%
+  mutate(`Percent Yes` = 100*n()/413)
+
+```
+
